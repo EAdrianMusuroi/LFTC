@@ -197,7 +197,7 @@ int t2(char c) {
 int t3(char c) {
 
   if(c == 'a' || c == 'b' || c == 'f' || c == 'n' || c == 'r' || c == 't' ||
-     c == 'v' || c == 39 || c == '?' || c == 34 || c == '\0')
+     c == 'v' || c == 39 || c == '?' || c == 34 || c == '0' || c == '\\')
     return 1;
   return 0;
 }
@@ -249,10 +249,12 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
   char character;
   char *temp = NULL;
   char errorBuffer[100];
+  int i, j;
   
   while(position < limit || t7(state)) {
 
     character = inputBuffer[position];
+    printf("%d\n", state);
     switch(state) {
 
     case 0:
@@ -388,11 +390,11 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
       break;
 
     case 2:
-      if(character == 46) {
+      if(character == '.') {
 	position++;
 	state = 10;
       }
-      if(character == '8' || character == '9') {
+      else if(character == '8' || character == '9') {
 	position++;
 	state = 6;
       }
@@ -627,6 +629,10 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
 	position++;
 	state = 52;
       }
+      else {
+	position++;
+	state = 18;
+      }
       break;
 
     case 21:
@@ -790,6 +796,9 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
 	case '"':
 	  newToken->character = '\"';
 	  break;
+	case '\\':
+	  newToken->character = '\\';
+	  break;
 	case '0':
 	  newToken->character = '\0';
 	  break;
@@ -895,6 +904,8 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
       if(lastState == 1)
 	newToken->integerNumber = strtol(temp, NULL, 10);
       else if(lastState == 2)
+	newToken->integerNumber = strtol(temp, NULL, 10);
+      else if(lastState == 4)
 	newToken->integerNumber = strtol(temp, NULL, 16);
       else
 	newToken->integerNumber = strtol(temp, NULL, 8);
@@ -910,8 +921,59 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
       newToken->code = CT_STRING;
       newToken->line = *line;
       newToken->text = (char*)malloc(length + 1);
-      strncpy(newToken->text, inputBuffer + start, length);
-      newToken->text[length] = '\0';
+
+      j = 0;
+      i = 0;
+      while(i < length) {
+	if(inputBuffer[start + i] == '\\') {
+	  switch(inputBuffer[start + i + 1]) {
+	  case 'a':
+	    newToken->text[j] = '\a';
+	    break;
+	  case 'b':
+	    newToken->text[j] = '\b';
+	    break;
+	  case 'f':
+	    newToken->text[j] = '\f';
+	    break;
+	  case 'n':
+	    newToken->text[j] = '\n';
+	    break;
+	  case 'r':
+	    newToken->text[j] = '\r';
+	    break;
+	  case 't':
+	    newToken->text[j] = '\t';
+	    break;
+	  case 'v':
+	    newToken->text[j] = '\v';
+	    break;
+	  case 39:
+	    newToken->text[j] = '\'';
+	    break;
+	  case 63:
+	    newToken->text[j] = '\?';
+	    break;
+	  case 34:
+	    newToken->text[j] = '\"';
+	    break;
+	  case 92:
+	    newToken->text[j] = '\\';
+	    break;
+	  case '0':
+	    newToken->text[j] = '\0';
+	    break;
+	  }
+	  i+=2;
+	}
+	else {
+	  newToken->text[j] = inputBuffer[start + i];
+	  i++;
+	}
+	j++;
+      }
+      //strncpy(newToken->text, inputBuffer + start, length);
+      newToken->text[j] = '\0';
 
       addToken(newToken);
       
@@ -1047,9 +1109,9 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
       temp[length] = '\0';
 
       newToken = (struct _Token*)malloc(sizeof(struct _Token));
-      newToken->code = CT_INT;
+      newToken->code = CT_REAL;
       newToken->line = *line;
-      newToken->integerNumber = atof(temp);
+      newToken->realNumber = atof(temp);
 
       addToken(newToken);
       free(temp);
