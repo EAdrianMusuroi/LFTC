@@ -254,7 +254,6 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
   while(position < limit || t7(state)) {
 
     character = inputBuffer[position];
-    printf("%d\n", state);
     switch(state) {
 
     case 0:
@@ -747,12 +746,76 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
       
     case 40:
       length = position - start;
+      i = 0;
+
+      if(strncmp(inputBuffer + start, "break", 5) == 0)
+	i = 1; //BREAK
+      else if(strncmp(inputBuffer + start, "char", 4) == 0)
+	i = 2; //CHAR
+      else if(strncmp(inputBuffer + start, "double", 6) == 0)
+	i = 3; //DOUBLE
+      else if(strncmp(inputBuffer + start, "else", 4) == 0)
+	i = 4; //ELSE
+      else if(strncmp(inputBuffer + start, "for", 3) == 0)
+	i = 5; //FOR
+      else if(strncmp(inputBuffer + start, "if", 2) == 0)
+	i = 6; //IF
+      else if(strncmp(inputBuffer + start, "int", 3) == 0)
+	i = 7; //INT
+      else if(strncmp(inputBuffer + start, "return", 6) == 0)
+	i = 8; //RETURN
+      else if(strncmp(inputBuffer + start, "struct", 6) == 0)
+	i = 9; //STRUCT
+      else if(strncmp(inputBuffer + start, "void", 4) == 0)
+	i = 10; //VOID
+      else if(strncmp(inputBuffer + start, "while", 5) == 0)
+	i = 11; //WHILE
+      
       newToken = (struct _Token*)malloc(sizeof(struct _Token));
-      newToken->code = ID;
+
+      switch(i) {
+      case 1:
+	newToken->code = BREAK;
+	break;
+      case 2:
+	newToken->code = CHAR;
+	break;
+      case 3:
+	newToken->code = DOUBLE;
+	break;
+      case 4:
+	newToken->code = ELSE;
+	break;
+      case 5:
+	newToken->code = FOR;
+	break;
+      case 6:
+	newToken->code = IF;
+	break;
+      case 7:
+	newToken->code = INT;
+	break;
+      case 8:
+	newToken->code = RETURN;
+	break;
+      case 9:
+	newToken->code = STRUCT;
+	break;
+      case 10:
+	newToken->code = VOID;
+	break;
+      case 11:
+	newToken->code = WHILE;
+	break;
+      case 0:
+	newToken->code = ID;
+	newToken->text = (char*)malloc(length + 1);
+	strncpy(newToken->text, (inputBuffer + start), length);
+	newToken->text[length] = '\0';
+	break;
+      }
+     
       newToken->line = *line;
-      newToken->text = (char*)malloc(length + 1);
-      strncpy(newToken->text, (inputBuffer + start), length);
-      newToken->text[length] = '\0';
       addToken(newToken);
 
       return position;
@@ -972,7 +1035,6 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
 	}
 	j++;
       }
-      //strncpy(newToken->text, inputBuffer + start, length);
       newToken->text[j] = '\0';
 
       addToken(newToken);
