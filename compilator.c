@@ -7,12 +7,7 @@
 #include<fcntl.h>
 #include<ctype.h>
 
-void error(char *msg, int errorCode) {
-
-  perror("Error: ");
-  perror(msg);
-  exit(errorCode);
-}
+//STRUCTURES & ENUMS
 
 enum {END, ID, BREAK, CHAR, DOUBLE, ELSE, FOR, IF, INT, RETURN, STRUCT, VOID, WHILE, CT_INT, CT_REAL,
       CT_CHAR, CT_STRING, COMMA, SEMICOLON, LPAR, RPAR, LBRACKET, RBRACKET, LACC, RACC, ADD, SUB, MUL,
@@ -31,8 +26,990 @@ struct _Token {
   struct _Token *nextToken;
 };
 
+//FUNCTION PROTOTYPES
+
+void error(char*, int);
+void parseCode(char*, int);
+int addNextToken(char*, int, int*);
+void addToken(struct _Token*);
+void printTokens();
+int t0(char);
+int t1(char);
+int t2(char);
+int t3(char);
+int t4(char);
+int t5(char);
+int t6(char);
+int t7(int);
+char* codeToStringForTypes(int);
+char* codeToStringForKeywords(int);
+char* codeToStringForDelimiters(int);
+char* codeToStringForOperators(int);
+
+
+//GLOBAL VARIABLES
+
 struct _Token *firstToken = NULL;
 struct _Token *lastToken = NULL;
+struct _Token *currentToken = NULL; //pentru analizatorul sintactic
+struct _Token *consumedToken = NULL; //memorarea tokenului pentru valoare
+
+
+
+int consume(int code) {
+
+  if(currentToken->code == code) {
+    consumedToken = currentToken;
+    currentToken = currentToken->nextToken;
+
+    return 1;
+  }
+  
+  return 0;
+}
+
+void syntacticErrorForTypes(int code) {
+
+  char *expected = codeToStringForTypes(code);
+  char errorMsg[50];
+  
+  if(expected == NULL) {
+    perror("No error message to show.\n");
+    exit(16);
+  }
+  else {
+    sprintf(errorMsg, "ERROR: At line %d -> Expected token of type: %s\n", expected);
+    perror(errorMsg);
+    free(expected);
+    exit(15);
+  }
+}
+
+void syntacticErrorForKeywords(int code) {
+
+  char *expected = codeToStringForKeywords(code);
+  char errorMsg[50];
+  
+  if(expected == NULL) {
+    perror("No error message to show.\n");
+    exit(16);
+  }
+  else {
+    sprintf(errorMsg, "ERROR: At line %d -> Expected keyword: %s\n", expected);
+    perror(errorMsg);
+    free(expected);
+    exit(15);
+  }
+}
+
+void syntacticErrorForDelimiters(int code) {
+
+  char *expected = codeToStringForDelimiters(code);
+  char errorMsg[50];
+  
+  if(expected == NULL) {
+    perror("No error message to show.\n");
+    exit(16);
+  }
+  else {
+    sprintf(errorMsg, "ERROR: At line %d -> Expected delimiter: %s\n", expected);
+    perror(errorMsg);
+    free(expected);
+    exit(15);
+  }
+}
+
+void syntacticErrorForOperators(int code) {
+
+  char *expected = codeToStringForOperators(code);
+  char errorMsg[50];
+  
+  if(expected == NULL) {
+    perror("No error message to show.\n");
+    exit(16);
+  }
+  else {
+    sprintf(errorMsg, "ERROR: At line %d -> Expected operator: %s\n", expected);
+    perror(errorMsg);
+    free(expected);
+    exit(15);
+  }
+}
+
+void syntacticErrorForOthers(char *name) {
+
+  char errorMsg[50];
+
+  sprintf(errorMsg, "ERROR: At line %d -> Expected %s\n", name);
+  perror(errorMsg);
+  exit(15);
+}
+
+int unit() {
+
+  while(true) {
+    if(!declStruct() && !declFunc() && !declVar())
+      break;
+  }
+
+  if(!consume(END))
+    syntacticErrorForTypes(END);
+
+  return 1;
+}
+
+int declStruct() {
+
+  struct _Token startToken = currentToken;
+  
+  if(consume(STRUCT)) {
+    if(!consume(ID))
+      syntacticErrorForTypes(ID);
+    if(!consume(LACC))
+      syntacticErrorForDelimiters(LACC);
+    
+    while(true) {
+      if(!declVar())
+	break;
+    }
+    
+    if(!consume(RACC))
+      syntacticErrorForDelimiters(RACC);
+    if(!consume(SEMICOLON))
+      syntacticErrorForDelimiters(SEMICOLON);
+
+    return 1;
+  }
+
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int declVar() {
+
+  struct _Token startToken = currentToken;
+  
+  if(typeBase()) {
+    if(!consume(ID))
+      syntacticErrorForTypes(ID);
+
+    arrayDecl();
+
+    while(true) {
+      if(consume(COMMA)) {
+	  if(!consume(ID))
+	    syntacticErrorForTypes(ID);
+	  arrayDecl();
+	}
+      else
+	break;
+    }
+    
+    if(!consume(SEMICOLON))
+      syntacticErrorForDelimiters(SEMICOLON);
+    
+    return 1;
+  }
+
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int typeBase() {
+
+  struct _Token startToken = currentToken;
+  
+  if(consume(INT) || consume(DOUBLE) || consume(CHAR))
+    return 1;
+  
+  if(consume(STRUCT)) {
+    if(!consume(ID))
+      syntacticErrorForTypes(ID);
+    
+    return 1;
+  }
+
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int arrayDecl() {
+
+  struct _Token startToken = currentToken;
+  
+  if(consume(LBRACKET)) {
+
+    expr();
+    if(!consume(RBRACKET))
+      syntacticErrorForDelimiters(RBRACKET);
+
+    return 1;
+    
+  }
+
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int typeName() {
+
+  struct _Token startToken = currentToken;
+  
+  if(typeBase()) {
+
+    arrayDecl();
+
+    return 1;
+  }
+
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int declFunc() {
+
+  struct _Token startToken = currentToken;
+  
+  if(typeBase()) {
+    consume(MUL);
+
+    if(!consume(ID))
+      syntacticErrorForTypes(ID);
+    
+    if(!consume(LPAR))
+      syntacticErrorForDelimiters(LPAR);
+    
+    if(funcArg()) {
+      while(true) {
+	if(consume(COMMA)) {
+	  if(!funcArg())
+	    syntacticErrorForOthers("funcArg");
+	}
+	else
+	  break;
+      }
+    }
+    
+    if(!consume(RPAR))
+      syntacticErrorForDelimiters(RPAR);
+
+    if(!stmCompound())
+      syntacticErrorForOthers("stmCompound");
+
+    return 1;
+  }
+
+  currentToken = startToken;
+  
+  if(consume(VOID)) {
+    if(!consume(ID))
+      syntacticErrorForTypes(ID);
+    
+    if(!consume(LPAR))
+      syntacticErrorForDelimiters(LPAR);
+    
+    if(funcArg()) {
+      while(true) {
+	if(consume(COMMA)) {
+	  if(!funcArg())
+	    syntacticErrorForOthers("funcArg");
+	}
+	else
+	  break;
+      }
+    }
+    
+    if(!consume(RPAR))
+      syntacticErrorForDelimiters(RPAR);
+
+    if(!stmCompound())
+      syntacticErrorForOthers("stmCompound");
+
+    return 1;
+  }
+
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int funcArg() {
+
+  struct _Token startToken = currentToken;
+  
+  if(typeBase()) {
+    if(!consume(ID))
+      syntacticErrorForTypes(ID);
+    
+    arrayDecl();
+
+    return 1;
+  }
+
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int stm() {
+
+  struct _Token startToken = currentToken;
+  
+  if(stmCompound())
+    return 1;
+
+  currentToken = startToken;
+  
+  if(consume(IF)) {
+      if(!consume(LPAR))
+	syntacticErrorForDelimiters(LPAR);
+      if(!expr())
+	syntacticErrorForOthers("expr");
+      if(!consume(RPAR))
+	syntacticErrorForDelimiters(RPAR);
+      if(!stm)
+	syntacticErrorForOthers("stm");
+      if(consume(ELSE)) {
+	if(!stm())
+	  syntacticErrorForOthers("stm");
+      }
+
+      return 1;
+  }
+
+  currentToken = startToken;
+  //pana aici
+  if(consume(WHILE)) {
+    if(!consume(LPAR))
+      syntacticError(LPAR);
+    if(!expr())
+      syntacticError("expr");
+    if(!consume(RPAR))
+      syntacticError(RPAR);
+    if(!stm())
+      syntacticError("stm");
+
+    return 1;
+  }
+
+  if(consume(FOR)) {
+    if(!consume(LPAR))
+      syntacticError(LPAR);
+    expr();
+    if(!consume(SEMICOLON))
+      syntacticError(SEMICOLON);
+    expr();
+    if(!consume(SEMICOLON))
+      syntacticError(SEMICOLON);
+    expr();
+    if(!consume(RPAR))
+      syntacticError(RPAR);
+    if(!stm)
+      syntacticError("stm");
+
+    return 1;
+  }
+
+  if(consume(BREAK))
+    if(!consume(SEMICOLON))
+      syntacticError(SEMICOLON);
+
+  if(consume(RETURN)) {
+    expr();
+    if(!consume(SEMICOLON))
+      syntacticError(SEMICOLON);
+
+    return 1;
+  }
+
+  expr();
+  if(consume(SEMICOLON))
+    return 1;
+
+  return 0;
+}
+
+int exprPrimary() {
+
+  struct _Token *startToken = currentToken;
+
+  if(consume(CT_INT))
+    return 1;
+  if(consume(CT_REAL))
+    return 1;
+  if(consume(CT_CHAR))
+    return 1;
+  if(consume(CT_STRING))
+    return 1;
+  if(consume(ID)) {
+    if(!consume(LPAR))
+      return 1;
+    else { //Exista LPAR
+      if(expr()) {
+	while(true) {
+	  if(!consume(COMMA))
+	    break;
+	  else if(!expr())
+	    syntacticError("expr");
+	}
+      }
+      if(!consume(RPAR))
+	syntacticError(RPAR);
+    }
+
+    return 1;
+  }
+  if(consume(LPAR)) {
+    if(!expr())
+      syntacticError("expr");
+    if(!consume(RPAR))
+      syntacticError(RPAR);
+
+    return 1;
+  }
+  return 0;
+}
+
+
+
+
+
+
+
+int exprUnary() {
+
+  if(exprPostfix())
+    return 1;
+
+  if(consume(SUB)) {
+    if(!exprUnary)
+      syntacticError("exprUnary");
+    return 1;
+  }
+  if(consume(NOT)) {
+    if(!exprUnary)
+      syntacticError("exprUnary");
+    return 1;
+  }
+
+  return 0;
+}
+
+int exprCast() {
+
+  if(consume(LPAR)) {
+    if(!typeName)
+      syntacticError("typeName");
+    if(!consume(RPAR))
+      syntacticError(RPAR);
+    if(!exprCast)
+      syntacticError("exprCast");
+
+    return 1;
+  }
+
+  if(exprUnary())
+    return 1;
+
+  return 0;
+}
+
+
+
+int stmCompound() {
+
+  if(consume(LACC)) {
+    while(true) {
+      if(!declVar() && !stm())
+	break;
+    }
+    if(!consume(RACC))
+       syntacticError(RACC);
+
+    return 1;
+  }
+  return 0;
+}
+
+int expr() {
+
+  if(exprAssign())
+    return 1;
+  return 0;
+}
+
+int exprAssign() {
+
+  if(exprUnary()) {
+
+    if(!consume(ASSIGN))
+      syntacticError(ASSIGN);
+    if(!exprAssign())
+      syntacticError("exprAssign");
+    return 1;
+  }
+  if(exprOr())
+    return 1;
+
+  return 0;
+}
+
+int exprOr1() {
+
+  if(consume(OR)) {
+    if(!exprAnd())
+      syntacticError("exprAnd");
+    if(!exprOr1())
+      syntacticError("exprOr1");
+  }
+  return 1;
+}
+
+int exprOr() {
+
+  if(exprAnd()) {
+    if(!exprOr1())
+      syntacticError("exprOr1");
+
+    return 1;
+  }
+  return 0;
+}
+
+int exprAnd1() {
+
+  if(consume(AND)) {
+    if(!exprEq())
+      syntacticError("exprEq");
+    if(!exprAnd1())
+      syntacticError("exprAnd1");
+  }
+
+  return 1;
+}
+int exprAnd() {
+
+  if(exprEq()) {
+    if(!exprEq1())
+      syntacticError("exprEq1");
+
+    return 1;
+  }
+  return 0;
+}
+
+int exprEq1() {
+
+  if(consume(EQUAL) || consume(NOTEQ)) {
+
+    if(!exprAdd())
+      syntacticError("exprAdd");
+    if(!exprEq1())
+      syntacticError("exprEq1");
+  }
+  return 1;
+}
+
+int exprEq() {
+
+  if(exprRel()) {
+    if(!exprEq1())
+      syntacticError("exprEq1");
+    return 1;
+  }
+  return 0;
+}
+
+int exprRel1() {
+
+  if(consume(LESS) || consume(LESSEQ) || consume(GREATER) || consume(GREATEREQ)) {
+
+    if(!exprAdd())
+      syntacticError("exprAdd");
+    if(!exprRel1())
+      syntacticError("exprRel1");
+  }
+  return 1;
+}
+
+int exprRel() {
+
+  if(exprAdd()) {
+
+    if(!exprRel1())
+      syntacticError("exprRel1");
+    return 1;
+  }
+
+  return 0;
+}
+
+int exprAdd1() {
+
+  if(consume(ADD) || consume(SUB)) {
+
+    if(!exprMul())
+      syntacticError("exprMul");
+    if(!exprAdd1())
+      syntacticError("exprAdd1");
+  }
+  return 1;
+}
+
+int exprAdd() {
+
+  if(exprMul()) {
+    if(!exprAdd1())
+      syntacticError("exprAdd1");
+
+    return 1;
+  }
+  return 0;
+}
+
+int exprMul1() {
+
+  if(consume(MUL) || consume(DIV)) {
+    if(!exprCast())
+      syntacticError("expr");
+    if(!exprMul1())
+      syntacticError("exprMul");
+
+    return 1;
+  }
+
+  return 1;
+}
+    
+int exprMul() {
+
+  if(exprCast()) {
+    if(!exprMul1())
+      syntacticError("exprMul1");
+    return 1;
+  }
+
+  return 0;
+}
+
+//A -> A a1 | A a2 | b
+//A -> b A1
+//A1 -> a1 A1 | a2 A1 | e
+
+int exprPostfix1() {
+
+  if(consume(LBRACKET)) {
+    if(!expr)
+      syntacticError("expr");
+    if(!consume(RBRACKET))
+      syntacticError(LBRACKET);
+    if(!exprPostfix1())
+      syntacticError("exprPostfix");
+    return 1;
+  }
+  if(consume(DOT)) {
+    if(!consume(ID))
+      syntacticError(ID);
+    if(!exprPostfix1())
+      syntacticError("exprPostfix");
+    return 1;
+  }
+  return 1;
+}
+
+int exprPostfix() {
+
+  if(exprPrimary()) {
+    if(!exprPostfix1())
+      syntacticError("exprPostfix1");
+    else
+      return 1;
+  }
+  if(exprPrimary1())
+    return 1;
+  return 0;
+}
+
+int syntacticAnalysis() {
+
+  
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int main(int argc, char **argv) {
+
+  if(argc < 2)
+    error("Too few arguments. Expected input file.\n", 1);
+
+  struct stat inputTest;
+  if(stat(argv[1], &inputTest) != 0)
+    error("Error calling stat function in input file.\n", 2);
+  if(!S_ISREG(inputTest.st_mode))
+    error("First argument must be a regular file.\n", 3);
+
+  int input;
+  input = open(argv[1], O_RDONLY);
+  if(input == -1)
+    error("Error opening input file.\n", 4);
+
+  char inputBuffer[4097];
+  int readBytes;
+
+  readBytes = read(input, &inputBuffer, 4096);
+  if(readBytes == -1)
+    error("Error reading from input file.\n", 5);  
+  printf("%d bytes read from input file.\n\n\n", readBytes);
+  
+  inputBuffer[readBytes] = '\0';
+
+  parseCode(inputBuffer, readBytes);
+
+  //printTokens();
+
+  return 0;
+}
+
+
+int t0(char c) {
+
+  if(c == '\n' || c == '\r' || c == '\t' || c == ' ')
+    return 1;
+  return 0;
+}
+int t1(char c) {
+
+  if(c == '8' || c == '9')
+    return 1;
+  return 0;
+}
+int t2(char c) {
+
+  if(isalpha(c) || c == '_')
+    return 1;
+  return 0;
+}
+int t3(char c) {
+
+  if(c == 'a' || c == 'b' || c == 'f' || c == 'n' || c == 'r' || c == 't' ||
+     c == 'v' || c == 39 || c == '?' || c == 34 || c == '0' || c == '\\')
+    return 1;
+  return 0;
+}
+int t4(char c) {
+
+  if((c >= 97 && c <= 102) || (c >= 65 && c <= 70))
+    return 1;
+  return 0;
+}
+int t5(char c) {
+  if(c >= 48 && c <= 55)
+    return 1;
+  return 0;
+}
+int t6(char c) {
+  if(c >= '1' && c <= '9')
+    return 1;
+  return 0;
+}
+int t7(int state) {
+
+  if(state >= 40 && state <= 67)
+    return 1;
+  return 0;
+  
+}
+
+void error(char *msg, int errorCode) {
+
+  perror("Error: ");
+  perror(msg);
+  exit(errorCode);
+}
+
+char* codeToStringForTypes(int code) {
+
+  char *s;
+  s = (char*)malloc(10);
+
+  switch(code) {
+
+  case 0:
+    strcpy(s, "END");
+    break;
+  case 1:
+    strcpy(s, "ID");
+    break;
+  case 13:
+    strcpy(s, "CT_INT");
+    break;
+  case 14:
+    strcpy(s, "CT_REAL");
+    break;
+  case 15:
+    strcpy(s, "CT_CHAR");
+    break;
+  case 16:
+    strcpy(s, "CT_STRING");
+    break;
+  default:
+    free(s);
+    return NULL;
+  }
+
+  return s;
+}
+
+char* codeToStringForKeywords(int code) {
+
+   char *s;
+   s = (char*)malloc(10);
+   
+   switch(code) {
+    case 2:
+      strcpy(s, "break");
+      break;
+    case 3:
+      strcpy(s, "char");
+      break;
+    case 4:
+      strcpy(s, "double");
+      break;
+    case 5:
+      strcpy(s, "else");
+      break;
+    case 6:
+      strcpy(s, "for");
+      break;
+    case 7:
+      strcpy(s, "if");
+      break;
+    case 8:
+      strcpy(s, "int");
+      break;
+    case 9:
+      strcpy(s, "return");
+      break;
+    case 10:
+      strcpy(s, "struct");
+      break;
+    case 11:
+      strcpy(s, "void");
+      break;
+    case 12:
+      strcpy(s, "while");
+      break;
+   default:
+     free(s);
+     return NULL;
+    }
+
+   return s;
+ }
+
+char* codeToStringForDelimiters(int code) {
+
+  char *s;
+  s = (char*)malloc(10);
+
+  switch(code) {
+
+  case 17:
+    strcpy(s, ",");
+    break;
+  case 18:
+    strcpy(s, ";");
+    break;
+  case 19:
+    strcpy(s, "(");
+    break;
+  case 20:
+    strcpy(s, ")");
+    break;
+  case 21:
+    strcpy(s, "[");
+    break;
+  case 22:
+    strcpy(s, "]");
+    break;
+  case 23:
+    strcpy(s, "{");
+    break;
+  case 24:
+    strcpy(s, "}");
+    break;
+  default:
+    free(s);
+    return NULL;
+  }
+
+  return s;
+}
+
+char* codeToStringForOperators(int code) {
+
+  char *s;
+  s = (char*)malloc(10);
+
+  switch(code) {
+
+  case 25:
+    strcpy(s, "+");
+    break;
+  case 26:
+    strcpy(s, "-");
+    break;
+  case 27:
+    strcpy(s, "*");
+    break;
+  case 28:
+    strcpy(s, "/");
+    break;
+  case 29:
+    strcpy(s, ".");
+    break;
+  case 30:
+    strcpy(s, "&&");
+    break;
+  case 31:
+    strcpy(s, "||");
+    break;
+  case 32:
+    strcpy(s, "!");
+    break;
+  case 33:
+    strcpy(s, "=");
+    break;
+  case 34:
+    strcpy(s, "==");
+    break;
+  case 35:
+    strcpy(s, "!=");
+    break;
+  case 36:
+    strcpy(s, "<");
+    break;
+  case 37:
+    strcpy(s, "<=");
+    break;
+  case 38:
+    strcpy(s, ">");
+    break;
+  case 39:
+    strcpy(s, ">=");
+    break;
+  default:
+    free(s);
+    return NULL;
+  }
+
+  return s;
+}
 
 void printTokens() {
 
@@ -176,54 +1153,6 @@ void printTokens() {
   printf("\n");
 }
 
-int t0(char c) {
-
-  if(c == '\n' || c == '\r' || c == '\t' || c == ' ')
-    return 1;
-  return 0;
-}
-int t1(char c) {
-
-  if(c == '8' || c == '9')
-    return 1;
-  return 0;
-}
-int t2(char c) {
-
-  if(isalpha(c) || c == '_')
-    return 1;
-  return 0;
-}
-int t3(char c) {
-
-  if(c == 'a' || c == 'b' || c == 'f' || c == 'n' || c == 'r' || c == 't' ||
-     c == 'v' || c == 39 || c == '?' || c == 34 || c == '0' || c == '\\')
-    return 1;
-  return 0;
-}
-int t4(char c) {
-
-  if((c >= 97 && c <= 102) || (c >= 65 && c <= 70))
-    return 1;
-  return 0;
-}
-int t5(char c) {
-  if(c >= 48 && c <= 55)
-    return 1;
-  return 0;
-}
-int t6(char c) {
-  if(c >= '1' && c <= '9')
-    return 1;
-  return 0;
-}
-int t7(int state) {
-
-  if(state >= 40 && state <= 67)
-    return 1;
-  return 0;
-  
-}
 void addToken(struct _Token *token) {
 
   if(firstToken == NULL) {
@@ -235,6 +1164,27 @@ void addToken(struct _Token *token) {
     lastToken = token;
   }
   token->nextToken = NULL;
+}
+
+void parseCode(char *inputBuffer, int limit) {
+
+  int totalCount = 0;
+  int addedToken;
+  int line = 0;
+  struct _Token *newToken = NULL;
+  
+  while(totalCount < limit) {
+
+    addedToken = addNextToken(inputBuffer + totalCount, limit - totalCount, &line);
+    if(addedToken == -1)
+      error("Something went wrong. File may be larger than program limit.\n", 6);
+    totalCount += addedToken;
+  }
+
+  newToken = (struct _Token*)malloc(sizeof(struct _Token));
+  newToken->code = END;
+  newToken->line = line;
+  addToken(newToken);
 }
 
 int addNextToken(char *inputBuffer, int limit, int *line) {
@@ -1186,51 +2136,4 @@ int addNextToken(char *inputBuffer, int limit, int *line) {
     return position;
 
   return -1;
-}
-
-void parseCode(char *inputBuffer, int limit) {
-
-  int totalCount = 0;
-  int addedToken;
-  int line = 0;
-  
-  while(totalCount < limit) {
-
-    addedToken = addNextToken(inputBuffer + totalCount, limit - totalCount, &line);
-    if(addedToken == -1)
-      error("Something went wrong. File may be larger than program limit.\n", 6);
-    totalCount += addedToken;
-  }
-}
-
-int main(int argc, char **argv) {
-
-  if(argc < 2)
-    error("Too few arguments. Expected input file.\n", 1);
-
-  struct stat inputTest;
-  if(stat(argv[1], &inputTest) != 0)
-    error("Error calling stat function in input file.\n", 2);
-  if(!S_ISREG(inputTest.st_mode))
-    error("First argument must be a regular file.\n", 3);
-
-  int input;
-  input = open(argv[1], O_RDONLY);
-  if(input == -1)
-    error("Error opening input file.\n", 4);
-
-  char inputBuffer[4097];
-  int readBytes;
-
-  readBytes = read(input, &inputBuffer, 4096);
-  if(readBytes == -1)
-    error("Error reading from input file.\n", 5);  
-  printf("%d bytes read from input file.\n", readBytes);
-  
-  inputBuffer[readBytes] = '\0';
-
-  parseCode(inputBuffer, readBytes);
-
-  printTokens();
-  return 0;
 }
