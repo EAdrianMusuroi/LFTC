@@ -45,7 +45,35 @@ char* codeToStringForTypes(int);
 char* codeToStringForKeywords(int);
 char* codeToStringForDelimiters(int);
 char* codeToStringForOperators(int);
-
+int unit(void);
+int declStruct(void);
+int declVar(void);
+int typeBase(void);
+int arrayDecl(void);
+int typeName(void);
+int declFunc(void);
+int funcArg(void);
+int stm(void);
+int stmCompound(void);
+int expr(void);
+int exprAssign(void);
+int exprOr(void);
+int exprAnd(void);
+int exprEq(void);
+int exprRel(void);
+int exprAdd(void);
+int exprMul(void);
+int exprCast(void);
+int exprUnary(void);
+int exprPostfix(void);
+int exprPrimary(void);
+int consume(int);
+void syntacticErrorForTypes(int);
+void syntacticErrorForKeywords(int);
+void syntacticErrorForDelimiters(int);
+void syntacticErrorForOperators(int);
+void syntacticErrorForOthers(char*);
+void syntacticAnalysis(void);
 
 //GLOBAL VARIABLES
 
@@ -78,7 +106,7 @@ void syntacticErrorForTypes(int code) {
     exit(16);
   }
   else {
-    sprintf(errorMsg, "ERROR: At line %d -> Expected token of type: %s\n", expected);
+    sprintf(errorMsg, "ERROR: At line %d -> Expected token of type: %s\n", currentToken->line, expected);
     perror(errorMsg);
     free(expected);
     exit(15);
@@ -95,7 +123,7 @@ void syntacticErrorForKeywords(int code) {
     exit(16);
   }
   else {
-    sprintf(errorMsg, "ERROR: At line %d -> Expected keyword: %s\n", expected);
+    sprintf(errorMsg, "ERROR: At line %d -> Expected keyword: %s\n", currentToken->line, expected);
     perror(errorMsg);
     free(expected);
     exit(15);
@@ -112,7 +140,7 @@ void syntacticErrorForDelimiters(int code) {
     exit(16);
   }
   else {
-    sprintf(errorMsg, "ERROR: At line %d -> Expected delimiter: %s\n", expected);
+    sprintf(errorMsg, "ERROR: At line %d -> Expected delimiter: %s\n", currentToken->line, expected);
     perror(errorMsg);
     free(expected);
     exit(15);
@@ -129,7 +157,7 @@ void syntacticErrorForOperators(int code) {
     exit(16);
   }
   else {
-    sprintf(errorMsg, "ERROR: At line %d -> Expected operator: %s\n", expected);
+    sprintf(errorMsg, "ERROR: At line %d -> Expected operator: %s\n", currentToken->line, expected);
     perror(errorMsg);
     free(expected);
     exit(15);
@@ -140,14 +168,14 @@ void syntacticErrorForOthers(char *name) {
 
   char errorMsg[50];
 
-  sprintf(errorMsg, "ERROR: At line %d -> Expected %s\n", name);
+  sprintf(errorMsg, "ERROR: At line %d -> Expected %s\n", currentToken->line, name);
   perror(errorMsg);
   exit(15);
 }
 
 int unit() {
 
-  while(true) {
+  while(1) {
     if(!declStruct() && !declFunc() && !declVar())
       break;
   }
@@ -160,7 +188,7 @@ int unit() {
 
 int declStruct() {
 
-  struct _Token startToken = currentToken;
+  struct _Token *startToken = currentToken;
   
   if(consume(STRUCT)) {
     if(!consume(ID))
@@ -168,7 +196,7 @@ int declStruct() {
     if(!consume(LACC))
       syntacticErrorForDelimiters(LACC);
     
-    while(true) {
+    while(1) {
       if(!declVar())
 	break;
     }
@@ -188,7 +216,7 @@ int declStruct() {
 
 int declVar() {
 
-  struct _Token startToken = currentToken;
+  struct _Token *startToken = currentToken;
   
   if(typeBase()) {
     if(!consume(ID))
@@ -196,7 +224,7 @@ int declVar() {
 
     arrayDecl();
 
-    while(true) {
+    while(1) {
       if(consume(COMMA)) {
 	  if(!consume(ID))
 	    syntacticErrorForTypes(ID);
@@ -219,7 +247,7 @@ int declVar() {
 
 int typeBase() {
 
-  struct _Token startToken = currentToken;
+  struct _Token *startToken = currentToken;
   
   if(consume(INT) || consume(DOUBLE) || consume(CHAR))
     return 1;
@@ -238,7 +266,7 @@ int typeBase() {
 
 int arrayDecl() {
 
-  struct _Token startToken = currentToken;
+  struct _Token *startToken = currentToken;
   
   if(consume(LBRACKET)) {
 
@@ -257,7 +285,7 @@ int arrayDecl() {
 
 int typeName() {
 
-  struct _Token startToken = currentToken;
+  struct _Token *startToken = currentToken;
   
   if(typeBase()) {
 
@@ -273,7 +301,7 @@ int typeName() {
 
 int declFunc() {
 
-  struct _Token startToken = currentToken;
+  struct _Token *startToken = currentToken;
   
   if(typeBase()) {
     consume(MUL);
@@ -285,7 +313,7 @@ int declFunc() {
       syntacticErrorForDelimiters(LPAR);
     
     if(funcArg()) {
-      while(true) {
+      while(1) {
 	if(consume(COMMA)) {
 	  if(!funcArg())
 	    syntacticErrorForOthers("funcArg");
@@ -314,7 +342,7 @@ int declFunc() {
       syntacticErrorForDelimiters(LPAR);
     
     if(funcArg()) {
-      while(true) {
+      while(1) {
 	if(consume(COMMA)) {
 	  if(!funcArg())
 	    syntacticErrorForOthers("funcArg");
@@ -340,7 +368,7 @@ int declFunc() {
 
 int funcArg() {
 
-  struct _Token startToken = currentToken;
+  struct _Token *startToken = currentToken;
   
   if(typeBase()) {
     if(!consume(ID))
@@ -358,7 +386,7 @@ int funcArg() {
 
 int stm() {
 
-  struct _Token startToken = currentToken;
+  struct _Token *startToken = currentToken;
   
   if(stmCompound())
     return 1;
@@ -372,7 +400,7 @@ int stm() {
 	syntacticErrorForOthers("expr");
       if(!consume(RPAR))
 	syntacticErrorForDelimiters(RPAR);
-      if(!stm)
+      if(!stm())
 	syntacticErrorForOthers("stm");
       if(consume(ELSE)) {
 	if(!stm())
@@ -383,179 +411,130 @@ int stm() {
   }
 
   currentToken = startToken;
-  //pana aici
+  
   if(consume(WHILE)) {
     if(!consume(LPAR))
-      syntacticError(LPAR);
+      syntacticErrorForDelimiters(LPAR);
     if(!expr())
-      syntacticError("expr");
+      syntacticErrorForOthers("expr");
     if(!consume(RPAR))
-      syntacticError(RPAR);
+      syntacticErrorForDelimiters(RPAR);
     if(!stm())
-      syntacticError("stm");
+      syntacticErrorForOthers("stm");
 
     return 1;
   }
 
+  currentToken = startToken;
+  
   if(consume(FOR)) {
     if(!consume(LPAR))
-      syntacticError(LPAR);
+      syntacticErrorForDelimiters(LPAR);
     expr();
     if(!consume(SEMICOLON))
-      syntacticError(SEMICOLON);
+      syntacticErrorForDelimiters(SEMICOLON);
     expr();
     if(!consume(SEMICOLON))
-      syntacticError(SEMICOLON);
+      syntacticErrorForDelimiters(SEMICOLON);
     expr();
     if(!consume(RPAR))
-      syntacticError(RPAR);
-    if(!stm)
-      syntacticError("stm");
+      syntacticErrorForDelimiters(RPAR);
+    if(!stm())
+      syntacticErrorForOthers("stm");
 
     return 1;
   }
 
-  if(consume(BREAK))
+  currentToken = startToken;
+  
+  if(consume(BREAK)) {
     if(!consume(SEMICOLON))
-      syntacticError(SEMICOLON);
+      syntacticErrorForDelimiters(SEMICOLON);
 
+    return 1;
+  }
+
+  currentToken = startToken;
+  
   if(consume(RETURN)) {
     expr();
     if(!consume(SEMICOLON))
-      syntacticError(SEMICOLON);
+      syntacticErrorForDelimiters(SEMICOLON);
 
     return 1;
   }
 
-  expr();
+  currentToken = startToken;
+
+  if(expr()) {
+    if(!consume(SEMICOLON))
+      syntacticErrorForDelimiters(SEMICOLON);
+ 
+    return 1;
+  }
+
+  currentToken = startToken;
+
   if(consume(SEMICOLON))
-    return 1;
+     return 1;
 
+  currentToken = startToken;
+  
   return 0;
 }
-
-int exprPrimary() {
-
-  struct _Token *startToken = currentToken;
-
-  if(consume(CT_INT))
-    return 1;
-  if(consume(CT_REAL))
-    return 1;
-  if(consume(CT_CHAR))
-    return 1;
-  if(consume(CT_STRING))
-    return 1;
-  if(consume(ID)) {
-    if(!consume(LPAR))
-      return 1;
-    else { //Exista LPAR
-      if(expr()) {
-	while(true) {
-	  if(!consume(COMMA))
-	    break;
-	  else if(!expr())
-	    syntacticError("expr");
-	}
-      }
-      if(!consume(RPAR))
-	syntacticError(RPAR);
-    }
-
-    return 1;
-  }
-  if(consume(LPAR)) {
-    if(!expr())
-      syntacticError("expr");
-    if(!consume(RPAR))
-      syntacticError(RPAR);
-
-    return 1;
-  }
-  return 0;
-}
-
-
-
-
-
-
-
-int exprUnary() {
-
-  if(exprPostfix())
-    return 1;
-
-  if(consume(SUB)) {
-    if(!exprUnary)
-      syntacticError("exprUnary");
-    return 1;
-  }
-  if(consume(NOT)) {
-    if(!exprUnary)
-      syntacticError("exprUnary");
-    return 1;
-  }
-
-  return 0;
-}
-
-int exprCast() {
-
-  if(consume(LPAR)) {
-    if(!typeName)
-      syntacticError("typeName");
-    if(!consume(RPAR))
-      syntacticError(RPAR);
-    if(!exprCast)
-      syntacticError("exprCast");
-
-    return 1;
-  }
-
-  if(exprUnary())
-    return 1;
-
-  return 0;
-}
-
-
 
 int stmCompound() {
 
+  struct _Token *startToken = currentToken;
+  
   if(consume(LACC)) {
-    while(true) {
+    while(1) {
       if(!declVar() && !stm())
 	break;
     }
     if(!consume(RACC))
-       syntacticError(RACC);
+       syntacticErrorForDelimiters(RACC);
 
     return 1;
   }
+
+  currentToken = startToken;
+  
   return 0;
 }
 
 int expr() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprAssign())
     return 1;
+
+  currentToken = startToken;
+  
   return 0;
 }
 
 int exprAssign() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprUnary()) {
-
     if(!consume(ASSIGN))
-      syntacticError(ASSIGN);
+      syntacticErrorForOperators(ASSIGN);
     if(!exprAssign())
-      syntacticError("exprAssign");
+      syntacticErrorForOthers("exprAssign");
+    
     return 1;
   }
+
+  currentToken = startToken;
+  
   if(exprOr())
     return 1;
 
+  currentToken = startToken;
+  
   return 0;
 }
 
@@ -563,43 +542,56 @@ int exprOr1() {
 
   if(consume(OR)) {
     if(!exprAnd())
-      syntacticError("exprAnd");
+      syntacticErrorForOthers("exprAnd");
     if(!exprOr1())
-      syntacticError("exprOr1");
+      syntacticErrorForOthers("exprOr1");
   }
+  
   return 1;
 }
 
 int exprOr() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprAnd()) {
     if(!exprOr1())
-      syntacticError("exprOr1");
+      syntacticErrorForOthers("exprOr1");
 
     return 1;
   }
+
+  currentToken = startToken;
+  
   return 0;
 }
+
 
 int exprAnd1() {
 
   if(consume(AND)) {
     if(!exprEq())
-      syntacticError("exprEq");
+      syntacticErrorForOthers("exprEq");
     if(!exprAnd1())
-      syntacticError("exprAnd1");
+      syntacticErrorForOthers("exprAnd1");
   }
 
   return 1;
 }
+
 int exprAnd() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprEq()) {
-    if(!exprEq1())
-      syntacticError("exprEq1");
+    if(!exprAnd1())
+      syntacticErrorForOthers("exprAnd1");
 
     return 1;
   }
+
+  currentToken = startToken;
+  
   return 0;
 }
 
@@ -607,21 +599,28 @@ int exprEq1() {
 
   if(consume(EQUAL) || consume(NOTEQ)) {
 
-    if(!exprAdd())
-      syntacticError("exprAdd");
+    if(!exprRel())
+      syntacticErrorForOthers("exprRel");
     if(!exprEq1())
-      syntacticError("exprEq1");
+      syntacticErrorForOthers("exprEq1");
   }
+  
   return 1;
 }
 
 int exprEq() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprRel()) {
     if(!exprEq1())
-      syntacticError("exprEq1");
+      syntacticErrorForOthers("exprEq1");
+    
     return 1;
   }
+
+  currentToken = startToken;
+  
   return 0;
 }
 
@@ -630,45 +629,55 @@ int exprRel1() {
   if(consume(LESS) || consume(LESSEQ) || consume(GREATER) || consume(GREATEREQ)) {
 
     if(!exprAdd())
-      syntacticError("exprAdd");
+      syntacticErrorForOthers("exprAdd");
     if(!exprRel1())
-      syntacticError("exprRel1");
+      syntacticErrorForOthers("exprRel1");
   }
+  
   return 1;
 }
 
 int exprRel() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprAdd()) {
-
     if(!exprRel1())
-      syntacticError("exprRel1");
+      syntacticErrorForOthers("exprRel1");
+
     return 1;
   }
 
+  currentToken = startToken;
+  
   return 0;
 }
 
 int exprAdd1() {
 
   if(consume(ADD) || consume(SUB)) {
-
     if(!exprMul())
-      syntacticError("exprMul");
+      syntacticErrorForOthers("exprMul");
     if(!exprAdd1())
-      syntacticError("exprAdd1");
+      syntacticErrorForOthers("exprAdd1");
   }
+  
   return 1;
 }
 
 int exprAdd() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprMul()) {
     if(!exprAdd1())
-      syntacticError("exprAdd1");
+      syntacticErrorForOthers("exprAdd1");
 
     return 1;
   }
+
+  currentToken = startToken;
+  
   return 0;
 }
 
@@ -676,11 +685,9 @@ int exprMul1() {
 
   if(consume(MUL) || consume(DIV)) {
     if(!exprCast())
-      syntacticError("expr");
+      syntacticErrorForOthers("exprCast");
     if(!exprMul1())
-      syntacticError("exprMul");
-
-    return 1;
+      syntacticErrorForOthers("exprMul");
   }
 
   return 1;
@@ -688,56 +695,162 @@ int exprMul1() {
     
 int exprMul() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprCast()) {
     if(!exprMul1())
-      syntacticError("exprMul1");
+      syntacticErrorForOthers("exprMul1");
+    
     return 1;
   }
 
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int exprCast() {
+
+  struct _Token *startToken = currentToken;
+  
+  if(consume(LPAR)) {
+    if(!typeName())
+      syntacticErrorForOthers("typeName");
+    if(!consume(RPAR))
+      syntacticErrorForDelimiters(RPAR);
+    if(!exprCast())
+      syntacticErrorForOthers("exprCast");
+
+    return 1;
+  }
+
+  currentToken = startToken;
+  
+  if(exprUnary())
+    return 1;
+
+  currentToken = startToken;
+  
+  return 0;
+}
+
+int exprUnary() {
+
+  struct _Token *startToken = currentToken;
+
+  if(consume(SUB) || consume(NOT)) {
+    if(!exprUnary())
+      syntacticErrorForOthers("exprUnary");
+
+    return 1;
+  }
+
+  currentToken = startToken;
+
+  if(exprPostfix())
+    return 1;
+
+  currentToken = startToken;
+  
   return 0;
 }
 
 //A -> A a1 | A a2 | b
 //A -> b A1
 //A1 -> a1 A1 | a2 A1 | e
-
 int exprPostfix1() {
 
   if(consume(LBRACKET)) {
-    if(!expr)
-      syntacticError("expr");
+    if(!expr())
+      syntacticErrorForOthers("expr");
     if(!consume(RBRACKET))
-      syntacticError(LBRACKET);
+      syntacticErrorForDelimiters(LBRACKET); //////AICI AM RAMAS
     if(!exprPostfix1())
-      syntacticError("exprPostfix");
+      syntacticErrorForOthers("exprPostfix1");
+    
     return 1;
   }
+  
   if(consume(DOT)) {
     if(!consume(ID))
-      syntacticError(ID);
+      syntacticErrorForTypes(ID);
     if(!exprPostfix1())
-      syntacticError("exprPostfix");
+      syntacticErrorForOthers("exprPostfix1");
+    
     return 1;
   }
+  
   return 1;
 }
 
 int exprPostfix() {
 
+  struct _Token *startToken = currentToken;
+  
   if(exprPrimary()) {
     if(!exprPostfix1())
-      syntacticError("exprPostfix1");
-    else
-      return 1;
-  }
-  if(exprPrimary1())
+      syntacticErrorForOthers("exprPostfix1");
+
     return 1;
+  }
+
+  currentToken = startToken;
+  
+  return 0;
+}
+  
+int exprPrimary() {
+
+  struct _Token *startToken = currentToken;
+
+  if(consume(ID)) {
+    if(!consume(LPAR))
+      return 1;
+    else { //Exista LPAR
+      if(expr()) {
+	while(1) {
+	  if(!consume(COMMA))
+	    break;
+	  else if(!expr())
+	    syntacticErrorForOthers("expr");
+	}
+      }
+      if(!consume(RPAR))
+	syntacticErrorForDelimiters(RPAR);
+    }
+
+    return 1;
+  }
+  
+  if(consume(CT_INT))
+    return 1;
+  if(consume(CT_REAL))
+    return 1;
+  if(consume(CT_CHAR))
+    return 1;
+  if(consume(CT_STRING))
+    return 1;
+  
+  if(consume(LPAR)) {
+    if(!expr())
+      syntacticErrorForOthers("expr");
+    if(!consume(RPAR))
+      syntacticErrorForDelimiters(RPAR);
+
+    return 1;
+  }
+
+  currentToken = startToken;
+  
   return 0;
 }
 
-int syntacticAnalysis() {
+void syntacticAnalysis() {
 
-  
+  if(unit())
+    printf("Correct.");
+  else
+    printf("Incorrect.");
 }
 
 
