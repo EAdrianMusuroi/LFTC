@@ -218,7 +218,7 @@ int declStruct() {
 
     char s1[] = "declStruct() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
     
     return 1;
@@ -228,7 +228,7 @@ int declStruct() {
 
   char s2[] = "declStruct() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -264,7 +264,7 @@ int declVar() {
 
     char s1[] = "declVar() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
 
     return 1;
@@ -274,7 +274,7 @@ int declVar() {
 
   char s2[] = "declVar() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -292,7 +292,7 @@ int typeBase() {
   if(consume(INT)) {
     char s5[] = "typeBase() function succeded with INT...";
     char nl5 = '\n';
-    write(syntacticAnalysisLogFile, s5, strlen(s));
+    write(syntacticAnalysisLogFile, s5, strlen(s5));
     write(syntacticAnalysisLogFile, &nl5, 1);
 
     return 1;
@@ -301,7 +301,7 @@ int typeBase() {
   if(consume(DOUBLE)) {
     char s4[] = "typeBase() function succeded with DOUBLE...";
     char nl4 = '\n';
-    write(syntacticAnalysisLogFile, s4, strlen(s));
+    write(syntacticAnalysisLogFile, s4, strlen(s4));
     write(syntacticAnalysisLogFile, &nl4, 1);
 
     return 1;
@@ -310,7 +310,7 @@ int typeBase() {
   if(consume(CHAR)) {
     char s0[] = "typeBase() function succeded with CHAR...";
     char nl0 = '\n';
-    write(syntacticAnalysisLogFile, s0, strlen(s));
+    write(syntacticAnalysisLogFile, s0, strlen(s0));
     write(syntacticAnalysisLogFile, &nl0, 1);
 
     return 1;
@@ -322,7 +322,7 @@ int typeBase() {
 
     char s1[] = "typeBase() function succeded with STRUCT ID...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
 
     return 1;
@@ -332,7 +332,7 @@ int typeBase() {
 
   char s2[] = "typeBase() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -355,7 +355,7 @@ int arrayDecl() {
 
     char s1[] = "arrayDecl() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
     
     return 1;
@@ -366,7 +366,7 @@ int arrayDecl() {
 
   char s2[] = "arrayDecl() funcition failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -387,7 +387,7 @@ int typeName() {
 
     char s1[] = "typeName() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -397,7 +397,7 @@ int typeName() {
 
   char s2[] = "typeName() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -427,7 +427,7 @@ int declFunc() {
 	currentToken = startToken;
 	char s1[] = "declFunc() function failed...";
 	char nl1 = '\n';
-	write(syntacticAnalysisLogFile, s1, strlen(s));
+	write(syntacticAnalysisLogFile, s1, strlen(s1));
 	write(syntacticAnalysisLogFile, &nl1, 1);
 
 	return 0;
@@ -453,7 +453,7 @@ int declFunc() {
 
     char s2[] = "declFunc() function succeded...";
     char nl2 = '\n';
-    write(syntacticAnalysisLogFile, s2, strlen(s));
+    write(syntacticAnalysisLogFile, s2, strlen(s2));
     write(syntacticAnalysisLogFile, &nl2, 1);
   
     return 1;
@@ -487,7 +487,7 @@ int declFunc() {
 
     char s3[] = "declFunc() function succeded...";
     char nl3 = '\n';
-    write(syntacticAnalysisLogFile, s3, strlen(s));
+    write(syntacticAnalysisLogFile, s3, strlen(s3));
     write(syntacticAnalysisLogFile, &nl3, 1);
 
     return 1;
@@ -497,7 +497,7 @@ int declFunc() {
 
   char s4[] = "declFunc() function failed...";
   char nl4 = '\n';
-  write(syntacticAnalysisLogFile, s4, strlen(s));
+  write(syntacticAnalysisLogFile, s4, strlen(s4));
   write(syntacticAnalysisLogFile, &nl4, 1);
   
   return 0;
@@ -521,7 +521,7 @@ int funcArg() {
 
     char s1[] = "funcArg() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -531,7 +531,7 @@ int funcArg() {
 
   char s2[] = "funcArg() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -549,7 +549,7 @@ int stm() {
   if(stmCompound()) {
     char s1[] = "stm() function succeded with stmCompound()...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -573,7 +573,7 @@ int stm() {
 
       char s2[] = "stm() function succeded with IF branch...";
       char nl2 = '\n';
-      write(syntacticAnalysisLogFile, s2, strlen(s));
+      write(syntacticAnalysisLogFile, s2, strlen(s2));
       write(syntacticAnalysisLogFile, &nl2, 1);
   
       return 1;
@@ -593,7 +593,7 @@ int stm() {
 
     char s3[] = "stm() function succeded with WHILE branch...";
     char nl3 = '\n';
-    write(syntacticAnalysisLogFile, s3, strlen(s));
+    write(syntacticAnalysisLogFile, s3, strlen(s3));
     write(syntacticAnalysisLogFile, &nl3, 1);
   
     return 1;
@@ -618,7 +618,7 @@ int stm() {
 
     char s4[] = "stm() function succeded with FOR branch...";
     char nl4 = '\n';
-    write(syntacticAnalysisLogFile, s4, strlen(s));
+    write(syntacticAnalysisLogFile, s4, strlen(s4));
     write(syntacticAnalysisLogFile, &nl4, 1);
 
     return 1;
@@ -632,7 +632,7 @@ int stm() {
 
     char s5[] = "stm() function succeded with BREAK branch...";
     char nl5 = '\n';
-    write(syntacticAnalysisLogFile, s5, strlen(s));
+    write(syntacticAnalysisLogFile, s5, strlen(s5));
     write(syntacticAnalysisLogFile, &nl5, 1);
   
     return 1;
@@ -647,7 +647,7 @@ int stm() {
 
     char s6[] = "stm() function succeded with RETURN branch...";
     char nl6 = '\n';
-    write(syntacticAnalysisLogFile, s6, strlen(s));
+    write(syntacticAnalysisLogFile, s6, strlen(s6));
     write(syntacticAnalysisLogFile, &nl6, 1);
   
     return 1;
@@ -661,7 +661,7 @@ int stm() {
 
     char s7[] = "stm() function succeded with expr() branch...";
     char nl7 = '\n';
-    write(syntacticAnalysisLogFile, s7, strlen(s));
+    write(syntacticAnalysisLogFile, s7, strlen(s7));
     write(syntacticAnalysisLogFile, &nl7, 1);
   
     return 1;
@@ -672,7 +672,7 @@ int stm() {
   if(consume(SEMICOLON)) {
     char s8[] = "stm() function succeded with SEMICOLON...";
     char nl8 = '\n';
-    write(syntacticAnalysisLogFile, s8, strlen(s));
+    write(syntacticAnalysisLogFile, s8, strlen(s8));
     write(syntacticAnalysisLogFile, &nl8, 1);
 
     return 1;
@@ -682,7 +682,7 @@ int stm() {
 
   char s9[] = "stm() function failed...";
   char nl9 = '\n';
-  write(syntacticAnalysisLogFile, s9, strlen(s));
+  write(syntacticAnalysisLogFile, s9, strlen(s9));
   write(syntacticAnalysisLogFile, &nl9, 1);
   
   return 0;
@@ -707,7 +707,7 @@ int stmCompound() {
 
     char s1[] = "stmCompound() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -717,7 +717,7 @@ int stmCompound() {
 
   char s2[] = "stmCompond() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -735,7 +735,7 @@ int expr() {
   if(exprAssign()) {
     char s1[] = "expr() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -745,7 +745,7 @@ int expr() {
 
   char s2[] = "expr() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -768,7 +768,7 @@ int exprAssign() {
 
     char s1[] = "exprAssign() function succeded with exprUnary branch...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
     
     return 1;
@@ -779,7 +779,7 @@ int exprAssign() {
   if(exprOr()) {
     char s2[] = "exprAssign() function succeded with exprOr branch...";
     char nl2 = '\n';
-    write(syntacticAnalysisLogFile, s2, strlen(s));
+    write(syntacticAnalysisLogFile, s2, strlen(s2));
     write(syntacticAnalysisLogFile, &nl2, 1);
   
     return 1;
@@ -788,7 +788,7 @@ int exprAssign() {
 
   char s3[] = "exprAssign() function failed...";
   char nl3 = '\n';
-  write(syntacticAnalysisLogFile, s3, strlen(s));
+  write(syntacticAnalysisLogFile, s3, strlen(s3));
   write(syntacticAnalysisLogFile, &nl3, 1);
   
   return 0;
@@ -821,7 +821,7 @@ int exprOr() {
 
     char s1[] = "exprOr() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -831,7 +831,7 @@ int exprOr() {
 
   char s2[] = "exprOr() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -865,7 +865,7 @@ int exprAnd() {
 
     char s1[] = "exprAnd() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -875,7 +875,7 @@ int exprAnd() {
 
   char s2[] = "exprAnd() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -909,7 +909,7 @@ int exprEq() {
 
     char s1[] = "exprEq() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
 
     return 1;
@@ -919,7 +919,7 @@ int exprEq() {
 
   char s2[] = "exprEq() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -953,7 +953,7 @@ int exprRel() {
 
     char s1[] = "exprRel() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -963,7 +963,7 @@ int exprRel() {
 
   char s2[] = "exprRel() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -996,7 +996,7 @@ int exprAdd() {
 
     char s1[] = "exprAdd() function succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -1006,7 +1006,7 @@ int exprAdd() {
 
   char s2[] = "exprAdd() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -1044,7 +1044,7 @@ int exprMul() {
 
   char s1[] = "exprMul() function failed...";
   char nl1 = '\n';
-  write(syntacticAnalysisLogFile, s1, strlen(s));
+  write(syntacticAnalysisLogFile, s1, strlen(s1));
   write(syntacticAnalysisLogFile, &nl1, 1);
   
   return 0;
@@ -1069,7 +1069,7 @@ int exprCast() {
 
     char s0[] = "exprCast() function succeded with LPAR branch...";
     char nl0 = '\n';
-    write(syntacticAnalysisLogFile, s0, strlen(s));
+    write(syntacticAnalysisLogFile, s0, strlen(s0));
     write(syntacticAnalysisLogFile, &nl0, 1);
   
     return 1;
@@ -1080,7 +1080,7 @@ int exprCast() {
   if(exprUnary()) {
     char s1[] = "exprCast() function succeded with exprUnary() branch...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -1090,7 +1090,7 @@ int exprCast() {
 
   char s2[] = "exprCast() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -1111,7 +1111,7 @@ int exprUnary() {
 
     char s0[] = "exprUnary() function succeded with first branch...";
     char nl0 = '\n';
-    write(syntacticAnalysisLogFile, s0, strlen(s));
+    write(syntacticAnalysisLogFile, s0, strlen(s0));
     write(syntacticAnalysisLogFile, &nl0, 1);
 
     return 1;
@@ -1122,7 +1122,7 @@ int exprUnary() {
   if(exprPostfix()) {
     char s1[] = "exprUnary() function succeded with exprPostfix() branch...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
     
     return 1;
@@ -1131,7 +1131,7 @@ int exprUnary() {
 
   char s2[] = "exprUnary() function failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -1180,7 +1180,7 @@ int exprPostfix() {
 
     char s1[] = "exprPostfix() succeded...";
     char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, s1, strlen(s1));
     write(syntacticAnalysisLogFile, &nl1, 1);
   
     return 1;
@@ -1190,7 +1190,7 @@ int exprPostfix() {
 
   char s2[] = "exprPostfix() failed...";
   char nl2 = '\n';
-  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, s2, strlen(s2));
   write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
@@ -1209,7 +1209,7 @@ int exprPrimary() {
     if(!consume(LPAR)) {
       char s1[] = "exprPrimary() succeded with ID...";
       char nl1 = '\n';
-      write(syntacticAnalysisLogFile, s1, strlen(s));
+      write(syntacticAnalysisLogFile, s1, strlen(s1));
       write(syntacticAnalysisLogFile, &nl1, 1);
   
       return 1;
@@ -1229,7 +1229,7 @@ int exprPrimary() {
 
     char s2[] = "exprPrimary() function succeded with ID branch...";
     char nl2 = '\n';
-    write(syntacticAnalysisLogFile, s2, strlen(s));
+    write(syntacticAnalysisLogFile, s2, strlen(s2));
     write(syntacticAnalysisLogFile, &nl2, 1);
   
     return 1;
@@ -1238,7 +1238,7 @@ int exprPrimary() {
   if(consume(CT_INT)) {
     char s3[] = "exprPrimary() function succeded with CT_INT...";
     char nl3 = '\n';
-    write(syntacticAnalysisLogFile, s3, strlen(s));
+    write(syntacticAnalysisLogFile, s3, strlen(s3));
     write(syntacticAnalysisLogFile, &nl3, 1);
   
     return 1;
@@ -1246,7 +1246,7 @@ int exprPrimary() {
   if(consume(CT_REAL)) {
     char s4[] = "exprPrimary() function succeded with CT_REAL...";
     char nl4 = '\n';
-    write(syntacticAnalysisLogFile, s4, strlen(s));
+    write(syntacticAnalysisLogFile, s4, strlen(s4));
     write(syntacticAnalysisLogFile, &nl4, 1);
   
     return 1;
@@ -1254,7 +1254,7 @@ int exprPrimary() {
   if(consume(CT_CHAR)) {
     char s5[] = "exprPrimary() function succeded with CT_CHAR...";
     char nl5 = '\n';
-    write(syntacticAnalysisLogFile, s5, strlen(s));
+    write(syntacticAnalysisLogFile, s5, strlen(s5));
     write(syntacticAnalysisLogFile, &nl5, 1);
 
     return 1;
@@ -1262,7 +1262,7 @@ int exprPrimary() {
   if(consume(CT_STRING)) {
     char s6[] = "exprPrimary() function succeded with CT_STRING...";
     char nl6 = '\n';
-    write(syntacticAnalysisLogFile, s6, strlen(s));
+    write(syntacticAnalysisLogFile, s6, strlen(s6));
     write(syntacticAnalysisLogFile, &nl6, 1);
   
     return 1;
@@ -1275,7 +1275,7 @@ int exprPrimary() {
 
     char s7[] = "exprPrimary() function succeded with LPAR branch...";
     char nl7 = '\n';
-    write(syntacticAnalysisLogFile, s7, strlen(s));
+    write(syntacticAnalysisLogFile, s7, strlen(s7));
     write(syntacticAnalysisLogFile, &nl7, 1);
   
     return 1;
@@ -1285,7 +1285,7 @@ int exprPrimary() {
 
   char s8[] = "exprPrimary() function failed...";
   char nl8 = '\n';
-  write(syntacticAnalysisLogFile, s8, strlen(s));
+  write(syntacticAnalysisLogFile, s8, strlen(s8));
   write(syntacticAnalysisLogFile, &nl8, 1);
   
   return 0;
@@ -1340,9 +1340,8 @@ int main(int argc, char **argv) {
   inputBuffer[readBytes] = '\0';
 
   parseCode(inputBuffer, readBytes);
+  printTokens();
   syntacticAnalysis();
-  
-  //printTokens();
 
   return 0;
 }
