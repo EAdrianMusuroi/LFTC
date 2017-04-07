@@ -81,7 +81,7 @@ struct _Token *firstToken = NULL;
 struct _Token *lastToken = NULL;
 struct _Token *currentToken = NULL; //pentru analizatorul sintactic
 struct _Token *consumedToken = NULL; //memorarea tokenului pentru valoare
-
+int syntacticAnalysisLogFile;
 
 
 int consume(int code) {
@@ -175,6 +175,11 @@ void syntacticErrorForOthers(char *name) {
 
 int unit() {
 
+  char s[] = "In function unit()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   while(1) {
     if(!declStruct() && !declFunc() && !declVar())
       break;
@@ -188,6 +193,11 @@ int unit() {
 
 int declStruct() {
 
+  char s[] = "In function declStruct()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(consume(STRUCT)) {
@@ -206,16 +216,31 @@ int declStruct() {
     if(!consume(SEMICOLON))
       syntacticErrorForDelimiters(SEMICOLON);
 
+    char s1[] = "declStruct() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+    
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "declStruct() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int declVar() {
 
+  char s[] = "In function declVar()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(typeBase()) {
@@ -236,36 +261,90 @@ int declVar() {
     
     if(!consume(SEMICOLON))
       syntacticErrorForDelimiters(SEMICOLON);
-    
+
+    char s1[] = "declVar() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "declVar() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int typeBase() {
 
+  char s[] = "In function typeBase()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
-  
-  if(consume(INT) || consume(DOUBLE) || consume(CHAR))
+
+  if(consume(INT)) {
+    char s5[] = "typeBase() function succeded with INT...";
+    char nl5 = '\n';
+    write(syntacticAnalysisLogFile, s5, strlen(s));
+    write(syntacticAnalysisLogFile, &nl5, 1);
+
     return 1;
-  
+  }
+
+  if(consume(DOUBLE)) {
+    char s4[] = "typeBase() function succeded with DOUBLE...";
+    char nl4 = '\n';
+    write(syntacticAnalysisLogFile, s4, strlen(s));
+    write(syntacticAnalysisLogFile, &nl4, 1);
+
+    return 1;
+  }
+
+  if(consume(CHAR)) {
+    char s0[] = "typeBase() function succeded with CHAR...";
+    char nl0 = '\n';
+    write(syntacticAnalysisLogFile, s0, strlen(s));
+    write(syntacticAnalysisLogFile, &nl0, 1);
+
+    return 1;
+  }
+    
   if(consume(STRUCT)) {
     if(!consume(ID))
       syntacticErrorForTypes(ID);
-    
+
+    char s1[] = "typeBase() function succeded with STRUCT ID...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "typeBase() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int arrayDecl() {
 
+  char s[] = "In function arrayDecl()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(consume(LBRACKET)) {
@@ -274,43 +353,86 @@ int arrayDecl() {
     if(!consume(RBRACKET))
       syntacticErrorForDelimiters(RBRACKET);
 
+    char s1[] = "arrayDecl() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+    
     return 1;
     
   }
 
   currentToken = startToken;
+
+  char s2[] = "arrayDecl() funcition failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int typeName() {
 
+  char s[] = "In function typeName()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(typeBase()) {
 
     arrayDecl();
 
+    char s1[] = "typeName() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "typeName() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int declFunc() {
 
+  char s[] = "In function declFunc()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
+  int mulFlag = 0;
   
   if(typeBase()) {
-    consume(MUL);
+    if(consume(MUL))
+      mulFlag = 1;
 
     if(!consume(ID))
       syntacticErrorForTypes(ID);
     
-    if(!consume(LPAR))
-      syntacticErrorForDelimiters(LPAR);
+    if(!consume(LPAR)) {
+      if(mulFlag)
+	syntacticErrorForDelimiters(LPAR);
+      else {
+	currentToken = startToken;
+	char s1[] = "declFunc() function failed...";
+	char nl1 = '\n';
+	write(syntacticAnalysisLogFile, s1, strlen(s));
+	write(syntacticAnalysisLogFile, &nl1, 1);
+
+	return 0;
+      }
+    }
     
     if(funcArg()) {
       while(1) {
@@ -329,6 +451,11 @@ int declFunc() {
     if(!stmCompound())
       syntacticErrorForOthers("stmCompound");
 
+    char s2[] = "declFunc() function succeded...";
+    char nl2 = '\n';
+    write(syntacticAnalysisLogFile, s2, strlen(s));
+    write(syntacticAnalysisLogFile, &nl2, 1);
+  
     return 1;
   }
 
@@ -358,17 +485,33 @@ int declFunc() {
     if(!stmCompound())
       syntacticErrorForOthers("stmCompound");
 
+    char s3[] = "declFunc() function succeded...";
+    char nl3 = '\n';
+    write(syntacticAnalysisLogFile, s3, strlen(s));
+    write(syntacticAnalysisLogFile, &nl3, 1);
+
     return 1;
   }
 
   currentToken = startToken;
+
+  char s4[] = "declFunc() function failed...";
+  char nl4 = '\n';
+  write(syntacticAnalysisLogFile, s4, strlen(s));
+  write(syntacticAnalysisLogFile, &nl4, 1);
   
   return 0;
 }
 
 int funcArg() {
 
+  char s[] = "In function funcArg()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
+  
   
   if(typeBase()) {
     if(!consume(ID))
@@ -376,20 +519,41 @@ int funcArg() {
     
     arrayDecl();
 
+    char s1[] = "funcArg() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "funcArg() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int stm() {
 
+  char s[] = "In function stm()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
   struct _Token *startToken = currentToken;
   
-  if(stmCompound())
+  
+  if(stmCompound()) {
+    char s1[] = "stm() function succeded with stmCompound()...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
+  }
 
   currentToken = startToken;
   
@@ -407,6 +571,11 @@ int stm() {
 	  syntacticErrorForOthers("stm");
       }
 
+      char s2[] = "stm() function succeded with IF branch...";
+      char nl2 = '\n';
+      write(syntacticAnalysisLogFile, s2, strlen(s));
+      write(syntacticAnalysisLogFile, &nl2, 1);
+  
       return 1;
   }
 
@@ -422,6 +591,11 @@ int stm() {
     if(!stm())
       syntacticErrorForOthers("stm");
 
+    char s3[] = "stm() function succeded with WHILE branch...";
+    char nl3 = '\n';
+    write(syntacticAnalysisLogFile, s3, strlen(s));
+    write(syntacticAnalysisLogFile, &nl3, 1);
+  
     return 1;
   }
 
@@ -442,6 +616,11 @@ int stm() {
     if(!stm())
       syntacticErrorForOthers("stm");
 
+    char s4[] = "stm() function succeded with FOR branch...";
+    char nl4 = '\n';
+    write(syntacticAnalysisLogFile, s4, strlen(s));
+    write(syntacticAnalysisLogFile, &nl4, 1);
+
     return 1;
   }
 
@@ -451,6 +630,11 @@ int stm() {
     if(!consume(SEMICOLON))
       syntacticErrorForDelimiters(SEMICOLON);
 
+    char s5[] = "stm() function succeded with BREAK branch...";
+    char nl5 = '\n';
+    write(syntacticAnalysisLogFile, s5, strlen(s));
+    write(syntacticAnalysisLogFile, &nl5, 1);
+  
     return 1;
   }
 
@@ -461,6 +645,11 @@ int stm() {
     if(!consume(SEMICOLON))
       syntacticErrorForDelimiters(SEMICOLON);
 
+    char s6[] = "stm() function succeded with RETURN branch...";
+    char nl6 = '\n';
+    write(syntacticAnalysisLogFile, s6, strlen(s));
+    write(syntacticAnalysisLogFile, &nl6, 1);
+  
     return 1;
   }
 
@@ -469,22 +658,43 @@ int stm() {
   if(expr()) {
     if(!consume(SEMICOLON))
       syntacticErrorForDelimiters(SEMICOLON);
- 
+
+    char s7[] = "stm() function succeded with expr() branch...";
+    char nl7 = '\n';
+    write(syntacticAnalysisLogFile, s7, strlen(s));
+    write(syntacticAnalysisLogFile, &nl7, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
 
-  if(consume(SEMICOLON))
-     return 1;
+  if(consume(SEMICOLON)) {
+    char s8[] = "stm() function succeded with SEMICOLON...";
+    char nl8 = '\n';
+    write(syntacticAnalysisLogFile, s8, strlen(s));
+    write(syntacticAnalysisLogFile, &nl8, 1);
 
+    return 1;
+  }
+  
   currentToken = startToken;
+
+  char s9[] = "stm() function failed...";
+  char nl9 = '\n';
+  write(syntacticAnalysisLogFile, s9, strlen(s));
+  write(syntacticAnalysisLogFile, &nl9, 1);
   
   return 0;
 }
 
 int stmCompound() {
 
+  char s[] = "In function stmCompound()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(consume(LACC)) {
@@ -495,28 +705,59 @@ int stmCompound() {
     if(!consume(RACC))
        syntacticErrorForDelimiters(RACC);
 
+    char s1[] = "stmCompound() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "stmCompond() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int expr() {
 
+  char s[] = "In function expr()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
-  if(exprAssign())
+  if(exprAssign()) {
+    char s1[] = "expr() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
-
+  }
+  
   currentToken = startToken;
+
+  char s2[] = "expr() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int exprAssign() {
 
+  char s[] = "In function exprAssign()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(exprUnary()) {
@@ -524,16 +765,31 @@ int exprAssign() {
       syntacticErrorForOperators(ASSIGN);
     if(!exprAssign())
       syntacticErrorForOthers("exprAssign");
+
+    char s1[] = "exprAssign() function succeded with exprUnary branch...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
     
     return 1;
   }
 
   currentToken = startToken;
   
-  if(exprOr())
+  if(exprOr()) {
+    char s2[] = "exprAssign() function succeded with exprOr branch...";
+    char nl2 = '\n';
+    write(syntacticAnalysisLogFile, s2, strlen(s));
+    write(syntacticAnalysisLogFile, &nl2, 1);
+  
     return 1;
-
+  }
   currentToken = startToken;
+
+  char s3[] = "exprAssign() function failed...";
+  char nl3 = '\n';
+  write(syntacticAnalysisLogFile, s3, strlen(s));
+  write(syntacticAnalysisLogFile, &nl3, 1);
   
   return 0;
 }
@@ -552,16 +808,31 @@ int exprOr1() {
 
 int exprOr() {
 
+  char s[] = "In function exprOr()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(exprAnd()) {
     if(!exprOr1())
       syntacticErrorForOthers("exprOr1");
 
+    char s1[] = "exprOr() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "exprOr() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
@@ -581,16 +852,31 @@ int exprAnd1() {
 
 int exprAnd() {
 
+  char s[] = "In function exprAnd()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(exprEq()) {
     if(!exprAnd1())
       syntacticErrorForOthers("exprAnd1");
 
+    char s1[] = "exprAnd() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "exprAnd() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
@@ -610,16 +896,31 @@ int exprEq1() {
 
 int exprEq() {
 
+  char s[] = "In function exprEq()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(exprRel()) {
     if(!exprEq1())
       syntacticErrorForOthers("exprEq1");
-    
+
+    char s1[] = "exprEq() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "exprEq() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
@@ -639,16 +940,31 @@ int exprRel1() {
 
 int exprRel() {
 
+  char s[] = "In function exprRel()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(exprAdd()) {
     if(!exprRel1())
       syntacticErrorForOthers("exprRel1");
 
+    char s1[] = "exprRel() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "exprRel() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
@@ -667,16 +983,31 @@ int exprAdd1() {
 
 int exprAdd() {
 
+  char s[] = "In function exprAdd()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(exprMul()) {
     if(!exprAdd1())
       syntacticErrorForOthers("exprAdd1");
 
+    char s1[] = "exprAdd() function succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "exprAdd() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
@@ -695,6 +1026,11 @@ int exprMul1() {
     
 int exprMul() {
 
+  char s[] = "In function exprMul()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(exprCast()) {
@@ -705,12 +1041,22 @@ int exprMul() {
   }
 
   currentToken = startToken;
+
+  char s1[] = "exprMul() function failed...";
+  char nl1 = '\n';
+  write(syntacticAnalysisLogFile, s1, strlen(s));
+  write(syntacticAnalysisLogFile, &nl1, 1);
   
   return 0;
 }
 
 int exprCast() {
 
+  char s[] = "In function exprCast()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(consume(LPAR)) {
@@ -721,36 +1067,72 @@ int exprCast() {
     if(!exprCast())
       syntacticErrorForOthers("exprCast");
 
+    char s0[] = "exprCast() function succeded with LPAR branch...";
+    char nl0 = '\n';
+    write(syntacticAnalysisLogFile, s0, strlen(s));
+    write(syntacticAnalysisLogFile, &nl0, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
   
-  if(exprUnary())
+  if(exprUnary()) {
+    char s1[] = "exprCast() function succeded with exprUnary() branch...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
-
+  }
+  
   currentToken = startToken;
+
+  char s2[] = "exprCast() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
 
 int exprUnary() {
 
+  char s[] = "In function exprUnary()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
 
   if(consume(SUB) || consume(NOT)) {
     if(!exprUnary())
       syntacticErrorForOthers("exprUnary");
 
+    char s0[] = "exprUnary() function succeded with first branch...";
+    char nl0 = '\n';
+    write(syntacticAnalysisLogFile, s0, strlen(s));
+    write(syntacticAnalysisLogFile, &nl0, 1);
+
     return 1;
   }
 
   currentToken = startToken;
 
-  if(exprPostfix())
+  if(exprPostfix()) {
+    char s1[] = "exprUnary() function succeded with exprPostfix() branch...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+    
     return 1;
-
+  }
   currentToken = startToken;
+
+  char s2[] = "exprUnary() function failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
@@ -785,27 +1167,53 @@ int exprPostfix1() {
 
 int exprPostfix() {
 
+  char s[] = "In function exprPostfix()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
   
   if(exprPrimary()) {
     if(!exprPostfix1())
       syntacticErrorForOthers("exprPostfix1");
 
+    char s1[] = "exprPostfix() succeded...";
+    char nl1 = '\n';
+    write(syntacticAnalysisLogFile, s1, strlen(s));
+    write(syntacticAnalysisLogFile, &nl1, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s2[] = "exprPostfix() failed...";
+  char nl2 = '\n';
+  write(syntacticAnalysisLogFile, s2, strlen(s));
+  write(syntacticAnalysisLogFile, &nl2, 1);
   
   return 0;
 }
   
 int exprPrimary() {
 
+  char s[] = "In function exprPrimary()...";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+  
   struct _Token *startToken = currentToken;
 
   if(consume(ID)) {
-    if(!consume(LPAR))
+    if(!consume(LPAR)) {
+      char s1[] = "exprPrimary() succeded with ID...";
+      char nl1 = '\n';
+      write(syntacticAnalysisLogFile, s1, strlen(s));
+      write(syntacticAnalysisLogFile, &nl1, 1);
+  
       return 1;
+    }
     else { //Exista LPAR
       if(expr()) {
 	while(1) {
@@ -819,38 +1227,88 @@ int exprPrimary() {
 	syntacticErrorForDelimiters(RPAR);
     }
 
+    char s2[] = "exprPrimary() function succeded with ID branch...";
+    char nl2 = '\n';
+    write(syntacticAnalysisLogFile, s2, strlen(s));
+    write(syntacticAnalysisLogFile, &nl2, 1);
+  
     return 1;
   }
   
-  if(consume(CT_INT))
-    return 1;
-  if(consume(CT_REAL))
-    return 1;
-  if(consume(CT_CHAR))
-    return 1;
-  if(consume(CT_STRING))
-    return 1;
+  if(consume(CT_INT)) {
+    char s3[] = "exprPrimary() function succeded with CT_INT...";
+    char nl3 = '\n';
+    write(syntacticAnalysisLogFile, s3, strlen(s));
+    write(syntacticAnalysisLogFile, &nl3, 1);
   
+    return 1;
+  }
+  if(consume(CT_REAL)) {
+    char s4[] = "exprPrimary() function succeded with CT_REAL...";
+    char nl4 = '\n';
+    write(syntacticAnalysisLogFile, s4, strlen(s));
+    write(syntacticAnalysisLogFile, &nl4, 1);
+  
+    return 1;
+  }
+  if(consume(CT_CHAR)) {
+    char s5[] = "exprPrimary() function succeded with CT_CHAR...";
+    char nl5 = '\n';
+    write(syntacticAnalysisLogFile, s5, strlen(s));
+    write(syntacticAnalysisLogFile, &nl5, 1);
+
+    return 1;
+  }
+  if(consume(CT_STRING)) {
+    char s6[] = "exprPrimary() function succeded with CT_STRING...";
+    char nl6 = '\n';
+    write(syntacticAnalysisLogFile, s6, strlen(s));
+    write(syntacticAnalysisLogFile, &nl6, 1);
+  
+    return 1;
+  }
   if(consume(LPAR)) {
     if(!expr())
       syntacticErrorForOthers("expr");
     if(!consume(RPAR))
       syntacticErrorForDelimiters(RPAR);
 
+    char s7[] = "exprPrimary() function succeded with LPAR branch...";
+    char nl7 = '\n';
+    write(syntacticAnalysisLogFile, s7, strlen(s));
+    write(syntacticAnalysisLogFile, &nl7, 1);
+  
     return 1;
   }
 
   currentToken = startToken;
+
+  char s8[] = "exprPrimary() function failed...";
+  char nl8 = '\n';
+  write(syntacticAnalysisLogFile, s8, strlen(s));
+  write(syntacticAnalysisLogFile, &nl8, 1);
   
   return 0;
 }
 
 void syntacticAnalysis() {
 
+  syntacticAnalysisLogFile = open("SyntacticLog", O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+  if(syntacticAnalysisLogFile == -1)
+    error("Error opening SyntacticLog file.\n", 16);
+
+  char s[] = "Starting syntactic analysis.";
+  char nl = '\n';
+  write(syntacticAnalysisLogFile, s, strlen(s));
+  write(syntacticAnalysisLogFile, &nl, 1);
+
+  currentToken = firstToken;
   if(unit())
-    printf("Correct.");
+    printf("Syntactic analysis succeded.");
   else
     printf("Incorrect.");
+
+  close(syntacticAnalysisLogFile);
 }
 
 
@@ -882,7 +1340,8 @@ int main(int argc, char **argv) {
   inputBuffer[readBytes] = '\0';
 
   parseCode(inputBuffer, readBytes);
-
+  syntacticAnalysis();
+  
   //printTokens();
 
   return 0;
