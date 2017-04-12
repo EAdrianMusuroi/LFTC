@@ -13,6 +13,10 @@ enum {END, ID, BREAK, CHAR, DOUBLE, ELSE, FOR, IF, INT, RETURN, STRUCT, VOID, WH
       CT_CHAR, CT_STRING, COMMA, SEMICOLON, LPAR, RPAR, LBRACKET, RBRACKET, LACC, RACC, ADD, SUB, MUL,
       DIV, DOT, AND, OR, NOT, ASSIGN, EQUAL, NOTEQ, LESS, LESSEQ, GREATER, GREATEREQ };
 
+enum {TB_INT, TB_DOUBLE, TB_CHAR, TB_STRUCT, TB_VOID };
+enum {CLS_VAR, CLS_FUNC, CLS_EXTFUNC, CLS_STRUCT };
+enum {MEM_GLOBAL, MEM_ARG, MEM_LOCAL};
+
 struct _Token {
 
   int code;
@@ -25,6 +29,35 @@ struct _Token {
   };
   struct _Token *nextToken;
 };
+
+struct _Symbol;
+typedef struct _Symbol Symbol;
+typedef struct {
+
+  Symbol **begin;
+  Symbol **end;
+  Symbol **after;
+} Symbols;
+
+typedef struct {
+
+  int typebase;
+  Symbol *s;
+  int nElements;
+} Type;
+
+typedef struct _Symbol {
+
+  const char *name;
+  int cls;
+  int mem;
+  Type type;
+  int depth;
+  union {
+    Symbols args;
+    Symbols members;
+  };
+} Symbol;
 
 //FUNCTION PROTOTYPES
 
@@ -82,7 +115,7 @@ struct _Token *lastToken = NULL;
 struct _Token *currentToken = NULL; //pentru analizatorul sintactic
 struct _Token *consumedToken = NULL; //memorarea tokenului pentru valoare
 int syntacticAnalysisLogFile;
-
+Symbols symbols;
 
 int consume(int code) {
 
@@ -203,8 +236,16 @@ int declStruct() {
   if(consume(STRUCT)) {
     if(!consume(ID))
       syntacticErrorForTypes(ID);
-    if(!consume(LACC))
-      syntacticErrorForDelimiters(LACC);
+    if(!consume(LACC)) {
+      char s3[] = "declStruct() function failed...";
+      char nl3 = '\n';
+      write(syntacticAnalysisLogFile, s3, strlen(s3));
+      write(syntacticAnalysisLogFile, &nl3, 1);
+
+      currentToken = startToken;
+      
+      return 0;
+    }
     
     while(1) {
       if(!declVar())
@@ -288,7 +329,7 @@ int typeBase() {
   write(syntacticAnalysisLogFile, &nl, 1);
   
   struct _Token *startToken = currentToken;
-
+  
   if(consume(INT)) {
     char s5[] = "typeBase() function succeded with INT...";
     char nl5 = '\n';
@@ -315,11 +356,11 @@ int typeBase() {
 
     return 1;
   }
-    
+  
   if(consume(STRUCT)) {
     if(!consume(ID))
       syntacticErrorForTypes(ID);
-
+     
     char s1[] = "typeBase() function succeded with STRUCT ID...";
     char nl1 = '\n';
     write(syntacticAnalysisLogFile, s1, strlen(s1));
@@ -761,17 +802,17 @@ int exprAssign() {
   struct _Token *startToken = currentToken;
   
   if(exprUnary()) {
-    if(!consume(ASSIGN))
-      syntacticErrorForOperators(ASSIGN);
-    if(!exprAssign())
-      syntacticErrorForOthers("exprAssign");
+    if(consume(ASSIGN)) {
+      if(!exprAssign())
+	syntacticErrorForOthers("exprAssign");
 
-    char s1[] = "exprAssign() function succeded with exprUnary branch...";
-    char nl1 = '\n';
-    write(syntacticAnalysisLogFile, s1, strlen(s1));
-    write(syntacticAnalysisLogFile, &nl1, 1);
-    
-    return 1;
+      char s1[] = "exprAssign() function succeded with exprUnary branch...";
+      char nl1 = '\n';
+      write(syntacticAnalysisLogFile, s1, strlen(s1));
+      write(syntacticAnalysisLogFile, &nl1, 1);
+          
+      return 1;
+    }
   }
 
   currentToken = startToken;
@@ -1060,19 +1101,19 @@ int exprCast() {
   struct _Token *startToken = currentToken;
   
   if(consume(LPAR)) {
-    if(!typeName())
-      syntacticErrorForOthers("typeName");
-    if(!consume(RPAR))
-      syntacticErrorForDelimiters(RPAR);
-    if(!exprCast())
-      syntacticErrorForOthers("exprCast");
+    if(typeName()) {
+      if(!consume(RPAR))
+	syntacticErrorForDelimiters(RPAR);
+      if(!exprCast())
+	syntacticErrorForOthers("exprCast");
 
-    char s0[] = "exprCast() function succeded with LPAR branch...";
-    char nl0 = '\n';
-    write(syntacticAnalysisLogFile, s0, strlen(s0));
-    write(syntacticAnalysisLogFile, &nl0, 1);
-  
-    return 1;
+      char s0[] = "exprCast() function succeded with LPAR branch...";
+      char nl0 = '\n';
+      write(syntacticAnalysisLogFile, s0, strlen(s0));
+      write(syntacticAnalysisLogFile, &nl0, 1);
+      
+      return 1;
+    }
   }
 
   currentToken = startToken;
@@ -1304,7 +1345,7 @@ void syntacticAnalysis() {
 
   currentToken = firstToken;
   if(unit())
-    printf("Syntactic analysis succeded.");
+    printf("Syntactic analysis succeded.\n");
   else
     printf("Incorrect.");
 
@@ -1340,7 +1381,7 @@ int main(int argc, char **argv) {
   inputBuffer[readBytes] = '\0';
 
   parseCode(inputBuffer, readBytes);
-  printTokens();
+  //printTokens();
   syntacticAnalysis();
 
   return 0;
