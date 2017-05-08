@@ -116,6 +116,58 @@ struct _Token *currentToken = NULL; //pentru analizatorul sintactic
 struct _Token *consumedToken = NULL; //memorarea tokenului pentru valoare
 int syntacticAnalysisLogFile;
 Symbols symbols;
+int crtDepth = 0;
+Symbol *crtFunc = NULL;
+Symbol *crtStruct = NULL;
+
+
+
+void initSymbols(Symbols *symbols) {
+
+  symbols->begin = NULL;
+  symbols->end = NULL;
+  symbols->after = NULL;
+}
+
+Symbol *addSymbol(Symbols *symbols, const char *name, int cls) {
+
+  Symbol *s;
+
+  if(symbols->end == symbols->after) {
+
+    int count = symbols->after - symbols->begin;
+    int n = count * 2;
+
+    if(n == 0)
+      n = 1;
+
+    symbols->begin = (Symbol**)realloc(symbols->begin, n * sizeof(Symbol*));
+    if(symbols->begin == NULL)
+      error("Not enough memory.\n", 28);
+    symbols->end = symbols->begin + count;
+    symbols->after = symbols->begin + n;
+  }
+
+  s = (Symbol*)malloc(sizeof(Symbol));
+
+  *symbols->end++ = s;
+  s->name = name;
+  s->cls = cls;
+  s->depth = crtDepth;
+
+  return s;
+}
+
+Symbol *findSymbol(Symbols *symbols, const char *name) {
+
+  Symbol **p;
+
+  for(p = symbols->begin; p != symbols->end; p++)
+    if(strcmp((*p)->name, name) == 0)
+      return (*p);
+
+  return NULL;
+}
 
 int consume(int code) {
 
